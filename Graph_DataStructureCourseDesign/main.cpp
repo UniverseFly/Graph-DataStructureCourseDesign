@@ -58,6 +58,11 @@ struct Graph {
         }
     };
 
+    // 通过值删除顶点 W(n^2)复杂度
+    void deleteVertex(const Value &value) {
+        deleteVertex(valueToIndex.at(value));
+    }
+
     // 通过值删除边。
     void deleteArc(const Value &start, const Value &end) {
         deleteArc(valueToIndex.at(start), valueToIndex.at(end));
@@ -170,7 +175,7 @@ int main() {
     // g.deleteArc("one", "five");
     g.deleteArc("three", "four");
     g.addArc("three", "four");
-    g.deleteVertex(0);
+    g.deleteVertex("zero");
     auto r1 = deepFirstSearch_recursive(g, std::string("one"));
     auto r2 = breadthFirstSearch(g, 0);
     return 0;
