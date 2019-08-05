@@ -18,7 +18,7 @@ struct Graph {
 
     void appendVertex(const Value &value) {
         vertices.push_back(Vertex(value));
-        // `verrices.size() - 1`代表刚刚加入的顶点的下标。
+        // `vertices.size() - 1`代表刚刚加入的顶点的下标。
         valueToIndex.insert({value, vertices.size() - 1});
     }
 
