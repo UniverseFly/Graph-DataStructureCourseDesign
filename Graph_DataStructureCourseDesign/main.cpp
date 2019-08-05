@@ -13,6 +13,7 @@ using std::unordered_map;
 using std::unordered_set;
 using std::queue;
 
+/// Value should be hashable
 template<typename Value>
 struct Graph {
     // `Graph<Value>::Vertex`，定义在下方。
@@ -36,13 +37,24 @@ struct Graph {
         vertices[startIndex].adjointList->insert(endIndex);
     }
 
-    // 通过下标删除顶点
+    // 通过下标删除顶点W(n^2)，复杂度很高。
     void deleteVertex(int index) {
         vertices.erase(vertices.begin() + index);
-        // 更新map
+        // 更新map同时更新被删除的边
         valueToIndex = {};
         for (unsigned long i = 0; i < vertices.size(); ++i) {
             valueToIndex.insert({vertices[i].getValue(), i});
+            // 删除邻接边
+            vertices[i].adjointList->erase(index);
+        }
+        // 更新映射下标（因为删除了index，index后的全部被移上来了）
+        for (unsigned long i = 0; i < vertices.size(); ++i) {
+            auto newSetForVertexI = make_shared<unordered_set<int>>();
+            for (const int &x : vertices[i].getAdjList()) {
+                if (x > index) { newSetForVertexI->insert(x - 1); }
+                else { newSetForVertexI->insert(x); }
+            }
+            vertices[i].adjointList = newSetForVertexI;
         }
     };
 
@@ -155,7 +167,7 @@ int main() {
     g.addArc("three", "five");
     g.addArc(3, 4);
     g.addArc("one", "five");
-    g.deleteArc("one", "five");
+    // g.deleteArc("one", "five");
     g.deleteArc("three", "four");
     g.addArc("three", "four");
     g.deleteVertex(0);
