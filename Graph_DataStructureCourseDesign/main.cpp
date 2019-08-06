@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <queue>
 #include <unordered_set>
+#include <stack>
 
 using std::vector;
 using std::shared_ptr;
@@ -12,6 +13,7 @@ using std::make_shared;
 using std::unordered_map;
 using std::unordered_set;
 using std::queue;
+using std::stack;
 
 /// Value should be hashable
 template<typename Value>
@@ -158,25 +160,69 @@ vector<Value> breadthFirstSearch(const Graph<Value> &graph, int startIndex) {
     return result;
 }
 
+// 根据值进行广度优先搜索
+template<typename Value>
+vector<Value> breadthFirstSearch(const Graph<Value> &graph, const Value &value) {
+    return breadthFirstSearch(graph, graph.valueToIndex.at(value));
+}
+
+// 根据下标非递归深度优先搜索
+template<typename Value>
+vector<Value> deepFirstSearch_nonRecursive(const Graph<Value> &graph, int startIndex) {
+    vector<Value> result;
+    vector<bool> visited(graph.verticesCount(), false);
+    // 栈，存放待扩展节点
+    stack<int> vertices;
+    vertices.push(startIndex);
+    while (!vertices.empty()) {
+        // 出栈
+        auto current = vertices.top();
+        vertices.pop();
+        // 存结果
+        result.push_back(graph.vertexAt(current).getValue());
+        // 标记为已访问
+        visited[current] = true;
+        for (const int &index : graph.vertexAt(current).getAdjList()) {
+            if (!visited[index]) {
+                visited[index] = true;
+                vertices.push(index);
+            }
+        }
+    }
+    return result;
+}
+
+// 根据值进行非递归深度优先搜索
+template<typename Value>
+vector<Value> deepFirstSearch_nonRecursive(const Graph<Value> &graph, const Value &value) {
+    return deepFirstSearch_nonRecursive(graph, graph.valueToIndex.at(value));
+}
+
 int main() {
     Graph<std::string> g;
+    vector<int> v;
     g.appendVertex("zero");
     g.appendVertex("one");
     g.appendVertex("two");
     g.appendVertex("three");
-    g.addArc("zero", "one");
-    g.addArc("one", "two");
-    g.addArc("zero", "three");
     g.appendVertex("four");
     g.appendVertex("five");
-    g.addArc("three", "five");
-    g.addArc(3, 4);
+    g.appendVertex("six");
+    g.addArc("zero", "one");
+    g.addArc("zero", "two");
+    g.addArc("one", "three");
     g.addArc("one", "five");
+    g.addArc("two", "five");
+    g.addArc("two", "six");
+    g.addArc("one", "six");
+    g.deleteArc("one", "six");
+    g.deleteVertex("four");
     // g.deleteArc("one", "five");
-    g.deleteArc("three", "four");
-    g.addArc("three", "four");
-    g.deleteVertex("zero");
-    auto r1 = deepFirstSearch_recursive(g, std::string("one"));
-    auto r2 = breadthFirstSearch(g, 0);
+    // g.deleteArc("three", "four");
+    // g.addArc("three", "four");
+    // g.deleteVertex("zero");
+    auto r1 = deepFirstSearch_recursive(g, std::string("zero"));
+    auto r2 = breadthFirstSearch(g, std::string("zero"));
+    auto r3 = deepFirstSearch_nonRecursive(g, std::string("zero"));
     return 0;
 }
