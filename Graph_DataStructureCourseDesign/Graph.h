@@ -95,7 +95,7 @@ private:
 public:
     // 初始化时指针始终指向空数组，保证访问安全。
     explicit Vertex(const Value &value) :
-            value(value), adjointList(std::make_shared<std::unordered_set<int >>()) {}
+            value(value), adjointList(std::make_shared<std::unordered_set<int>>()) {}
 
     const Value &getValue() const { return value; }
 

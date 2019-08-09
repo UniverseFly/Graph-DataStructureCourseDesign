@@ -29,5 +29,11 @@ int main() {
     auto r1 = deepFirstSearch_recursive(g, std::string("zero"));
     auto r2 = breadthFirstSearch(g, std::string("zero"));
     auto r3 = deepFirstSearch_nonRecursive(g, std::string("zero"));
+    // for (const auto &list : r2.containerCondition) {
+    //     for (const auto &x : list) {
+    //         std::cout << x << ' ';
+    //     }
+    //     std::cout << std::endl;
+    // }
     return 0;
 }
