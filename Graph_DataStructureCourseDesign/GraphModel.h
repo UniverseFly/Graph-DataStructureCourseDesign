@@ -9,50 +9,45 @@
 #include <QAbstractItemModel>
 #include "Graph.h"
 #include <string>
+#include <QPoint>
+#include <QVector>
 
-struct GraphModel : QAbstractItemModel {
+#define test \
+    addVertex("hello", {20, 20});\
+    addVertex("world", {50, 25});\
+    addVertex("me", {100, 20});\
+    addVertex("wyx", {30, 70});\
+    addArc(0, 1); \
+    addArc(1, 2);
+
+#define edgeWeight 1
+
+struct GraphModel : QObject {
 Q_OBJECT
 private:
     Graph<std::string> graph;
+private:
+    // 保存每个顶点的位置信息
+    QVector<QPoint> vertexPositions;
+    QVector<QPair<int, int>> arcs;
 public:
     GraphModel() {
-        graph.appendVertex("hello");
-        graph.appendVertex("world");
-        graph.appendVertex("me");
-        graph.appendVertex("wyx");
+        test
     }
 
-    int rowCount(const QModelIndex &parent) const override {
-        return graph.verticesCount();
+    void addVertex(const std::string &value, const QPoint &point) {
+        graph.appendVertex(value);
+        vertexPositions.push_back(point);
     }
 
-    QVariant data(const QModelIndex &index, int role) const override {
-        if (!index.isValid() || index.row() >= graph.verticesCount()) { return {}; }
-
-        if (role != Qt::DisplayRole)
-            return {};
-
-        return QString::fromStdString(graph.vertexAt(index.row()).getValue());
+    void addArc(int startIndex, int endIndex) {
+        graph.addArc_withIndex(startIndex, endIndex);
+        arcs.push_back({startIndex, endIndex});
     }
 
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const override {
-        if (role != Qt::DisplayRole) { return {}; }
+    const QVector<QPoint> &getVertexPositions() const { return vertexPositions; }
 
-        return "Fuck";
-    }
-
-    int columnCount(const QModelIndex &parent) const override {
-        return 1;
-    }
-
-    QModelIndex index(int row, int column, const QModelIndex &parent) const override {
-        if (row < 0 || row >= graph.verticesCount() || parent.isValid()) { return {}; }
-        return createIndex(row, column);
-    }
-
-    QModelIndex index(int row, int column) const { return index(row, column, {}); }
-
-    QModelIndex parent(const QModelIndex &index) const override { return {}; }
+    const QVector<QPair<int, int>> &getArcs() const { return arcs; }
 };
 
 
