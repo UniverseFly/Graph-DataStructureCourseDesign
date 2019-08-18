@@ -66,9 +66,9 @@ int main(int argc, char **argv) {
     GraphView view;
     view.show();
 
-    QTimer timer;
-    QObject::connect(&timer, &QTimer::timeout, &view, &GraphView::resetViewFromModel);
-    timer.start(5000);
+    // QTimer timer;
+    // QObject::connect(&timer, &QTimer::timeout, &view, &GraphView::resetViewFromModel);
+    // timer.start(5000);
 
     return QApplication::exec();
 }

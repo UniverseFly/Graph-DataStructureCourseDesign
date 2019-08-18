@@ -21,8 +21,6 @@
     addArc(0, 1); \
     addArc(1, 2);
 
-#define edgeWeight 1
-
 struct GraphModel : QObject {
 Q_OBJECT
 private:

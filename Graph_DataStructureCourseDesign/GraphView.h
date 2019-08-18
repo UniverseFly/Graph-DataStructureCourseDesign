@@ -35,7 +35,7 @@ Q_OBJECT
 #endif
 private:
     GraphModel model;
-    QList<NodeItem *> nodes;
+    QVector<NodeItem *> nodes;
     QMap<QPair<int, int>, ArcItem *> arcs;
 private:
     QLineEdit *startLineEdit = new QLineEdit(this);
@@ -134,48 +134,42 @@ public:
 
     void deepFirstSearchShow() {
         const auto &searchResult = model.deepFirstSearch_nonRecursive();
-        auto label = new QPushButton("haha", this);
-        label->show();
-
-        auto machine = new QStateMachine(this);
-        auto group = new QState;
-
-        auto states = new QVector<QState *>;
 
         QString text;
+        auto sequenceAnimation = new QSequentialAnimationGroup;
         for (int index : searchResult) {
             // 添加结果的文字说明
             std::ostringstream oss;
             oss << index << ' ';
             text += QString::fromStdString(oss.str());
             auto position = QGraphicsView::mapFromScene(nodes[index]->pos());
-            auto state = new QState(group);
-            state->assignProperty(label, "pos", position);
-            states->push_back(state);
+
+            auto parallelAnimation = new QParallelAnimationGroup;
+
+            auto scaleAnimation = new QPropertyAnimation(nodes[index], "scale");
+            scaleAnimation->setDuration(1200);
+            scaleAnimation->setStartValue(1);
+            scaleAnimation->setKeyValueAt(0.5, 0);
+            scaleAnimation->setEndValue(1);
+            scaleAnimation->setEasingCurve(QEasingCurve::OutBounce);
+
+            auto opacityAnimation = new QPropertyAnimation(nodes[index], "opacity");
+            opacityAnimation->setDuration(1500);
+            opacityAnimation->setStartValue(1);
+            opacityAnimation->setKeyValueAt(0.5, 0.3);
+            opacityAnimation->setEndValue(1);
+            opacityAnimation->setEasingCurve(QEasingCurve::OutQuad);
+
+            parallelAnimation->addAnimation(scaleAnimation);
+            parallelAnimation->addAnimation(opacityAnimation);
+
+            sequenceAnimation->addAnimation(parallelAnimation);
         }
         // set result label
         result->setText(text);
-        qDebug() << text;
+        qDebug() << searchResult;
 
-        group->setInitialState(states->first());
-        machine->addState(group);
-        machine->setInitialState(group);
-
-        auto sequenceAnimation = new QSequentialAnimationGroup;
-
-        auto timer = new QTimer;
-        timer->setInterval(2000);
-        QObject::connect(group, &QState::entered, timer, QOverload<>::of(&QTimer::start));
-
-        for (int i = 0; i < states->size() - 1; ++i) {
-            auto animation = new QPropertyAnimation(label, "pos", this);
-            animation->setDuration(1500);
-            (*states)[i]->addTransition(timer, &QTimer::timeout, (*states)[i + 1])
-                    ->addAnimation(animation);
-        }
-
-
-        machine->start();
+        sequenceAnimation->start(QPropertyAnimation::DeleteWhenStopped);
     }
 
 private:
