@@ -8,18 +8,20 @@
 
 #include <QGraphicsItem>
 #include <QPainter>
+#include <QList>
 #include <QPen>
 #include "ArcItem.h"
 
 struct NodeItem : QGraphicsObject {
-    Q_OBJECT
+Q_OBJECT
 private:
+    QString text;
 public:
-    explicit NodeItem() {
+    explicit NodeItem(const QString &text = "") : text(text) {
         setFlag(ItemIsMovable);
         setFlag(ItemSendsGeometryChanges);
         setCacheMode(DeviceCoordinateCache);
-        setZValue(-1);
+        setZValue(int(-1));
     }
 
     QRectF boundingRect() const override {
@@ -29,8 +31,12 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
         painter->setBrush(Qt::lightGray);
         painter->setPen(QPen(Qt::black, 2, Qt::SolidLine));
+        QFont font;
+        font.setPointSize(10);
+        painter->setFont(font);
 
         painter->drawEllipse(-10, -10, 20, 20);
+        painter->drawText(-5, -5, 10, 10, Qt::AlignCenter, text);
     }
 
 protected:
@@ -51,6 +57,7 @@ protected:
         update();
         QGraphicsItem::mouseReleaseEvent(event);
     }
+
 signals:
     void nodePositionChanged(NodeItem *node);
 };

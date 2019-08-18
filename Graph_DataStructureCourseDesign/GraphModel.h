@@ -8,11 +8,12 @@
 
 #include <QAbstractItemModel>
 #include "Graph.h"
+#include "GraphAlgorithms.h"
 #include <string>
 #include <QPoint>
 #include <QVector>
 
-#define test \
+#define TEST_CASE \
     addVertex("hello", {20, 20});\
     addVertex("world", {50, 25});\
     addVertex("me", {100, 20});\
@@ -32,7 +33,7 @@ private:
     QVector<QPair<int, int>> arcs;
 public:
     GraphModel() {
-        test
+        TEST_CASE
     }
 
     void addVertex(const std::string &value, const QPoint &point) {
@@ -48,6 +49,14 @@ public:
     const QVector<QPoint> &getVertexPositions() const { return vertexPositions; }
 
     const QVector<QPair<int, int>> &getArcs() const { return arcs; }
+
+    void setVertexPosition(int index, const QPoint &position) {
+        vertexPositions[index] = position;
+    }
+
+    QVector<int> deepFirstSearch_nonRecursive() {
+        return QVector<int>::fromStdVector(deepFirstSearch_recursive_withIndex(graph, 0).indexOrder);
+    }
 };
 
 

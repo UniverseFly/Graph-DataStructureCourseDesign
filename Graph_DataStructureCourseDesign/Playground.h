@@ -13,12 +13,11 @@
 #include <QGraphicsEllipseItem>
 #include "GraphModel.h"
 
-#define MAIN friend int main(int argc, char **argv);
 
 struct Playground : QMainWindow {
 Q_OBJECT
 #ifdef DEBUG
-    MAIN
+    FRIEND_MAIN
 #endif
 private:
     QGraphicsScene *scene = new QGraphicsScene({0, 0, 800, 600}, this);

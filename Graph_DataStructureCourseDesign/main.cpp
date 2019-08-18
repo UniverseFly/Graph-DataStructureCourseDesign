@@ -1,4 +1,8 @@
+#define FRIEND_MAIN friend int main(int argc, char **argv);
+#define DEBUG
+
 #include <iostream>
+
 #include <vector>
 #include "Graph.h"
 #include "GraphAlgorithms.h"
@@ -8,13 +12,13 @@
 #include "GraphModel.h"
 #include "GraphView.h"
 
-#define DEBUG
 #include "Playground.h"
 #include "NodeItem.h"
 
 #include <QDebug>
 #include <QLabel>
 #include <QPushButton>
+#include <QTimer>
 
 void testCase() {
     Graph<std::string> g;
@@ -60,8 +64,11 @@ int main(int argc, char **argv) {
     // scene.addItem(&node);
     // QGraphicsView view(&scene);
     GraphView view;
-
     view.show();
+
+    QTimer timer;
+    QObject::connect(&timer, &QTimer::timeout, &view, &GraphView::resetViewFromModel);
+    timer.start(5000);
 
     return QApplication::exec();
 }
