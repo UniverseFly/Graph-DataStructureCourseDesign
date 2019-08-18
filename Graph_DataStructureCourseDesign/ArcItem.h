@@ -8,6 +8,7 @@
 
 #include <QGraphicsItem>
 #include <QPainter>
+#include <cmath>
 
 struct ArcItem : QGraphicsItem {
 private:
@@ -23,7 +24,7 @@ public:
         // Draw the arrows
         double angle = std::atan2(-line.dy(), line.dx());
 
-#define arrowSize 10
+        int arrowSize = 10;
         QPointF destArrowP1 = end + QPointF(sin(angle - M_PI / 3) * arrowSize,
                                             cos(angle - M_PI / 3) * arrowSize);
         QPointF destArrowP2 = end + QPointF(sin(angle - M_PI + M_PI / 3) * arrowSize,

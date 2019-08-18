@@ -12,8 +12,8 @@
 #include "GraphModel.h"
 #include "GraphView.h"
 
-#include "Playground.h"
 #include "NodeItem.h"
+#include "AbstractContainerView.h"
 
 #include <QDebug>
 #include <QLabel>
@@ -59,16 +59,18 @@ int main(int argc, char **argv) {
     QApplication app(argc, argv);
     QApplication::setApplicationName("数据结构-图");
 
-    // NodeItem node;
-    // QGraphicsScene scene;
-    // scene.addItem(&node);
-    // QGraphicsView view(&scene);
-    GraphView view;
+    // GraphView view;
+    // view.show();
+
+    AbstractContainerView view;
     view.show();
 
-    // QTimer timer;
-    // QObject::connect(&timer, &QTimer::timeout, &view, &GraphView::resetViewFromModel);
-    // timer.start(5000);
+    QTimer timer;
+    timer.setInterval(5000);
+    timer.setSingleShot(true);
+    timer.start();
+
+    QObject::connect(&timer, &QTimer::timeout, &view, &AbstractContainerView::fuck);
 
     return QApplication::exec();
 }

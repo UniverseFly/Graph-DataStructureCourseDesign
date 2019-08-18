@@ -17,9 +17,11 @@ Q_OBJECT
 private:
     QString text;
 public:
-    explicit NodeItem(const QString &text = "") : text(text) {
-        setFlag(ItemIsMovable);
-        setFlag(ItemSendsGeometryChanges);
+    explicit NodeItem(const QString &text, bool movable = true) : text(text) {
+        if (movable) {
+            setFlag(ItemIsMovable);
+            setFlag(ItemSendsGeometryChanges);
+        }
         setCacheMode(DeviceCoordinateCache);
         setZValue(int(-1));
     }
@@ -59,6 +61,7 @@ protected:
     }
 
 signals:
+
     void nodePositionChanged(NodeItem *node);
 };
 
