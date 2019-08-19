@@ -9,19 +9,19 @@
 #include <QGraphicsView>
 #include <QVector>
 #include <QGraphicsObject>
+#include <QGraphicsWidget>
 #include <sstream>
 #include <QDebug>
 #include "NodeItem.h"
 
 struct GraphicsListObject : QGraphicsObject {
+    Q_OBJECT
 #ifdef DEBUG
 
     FRIEND_MAIN
 
 #endif
-    Q_PROPERTY(QVariantList raw
-                       WRITE
-                       resetToRaw)
+    Q_PROPERTY(QVariantList raw WRITE resetToRaw)
 private:
     QVector<QGraphicsObject *> items;
     QPoint storePoint = {0, 0};

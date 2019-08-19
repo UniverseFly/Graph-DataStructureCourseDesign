@@ -29,7 +29,7 @@
     graphObject.addArc(1, 2);
 
 struct ApplicationWindow : QMainWindow {
-    Q_OBJECT
+Q_OBJECT
 private:
     GraphModel model;
     QGraphicsView view;
@@ -93,34 +93,39 @@ private:
     }
 
     void dfs_nonRecursive() {
+        auto userChoice = askForTraverseStartIndex();
+
+        if (userChoice.first == QMessageBox::Cancel) { return; }
+
+        const auto &result = model.deepFirstSearch_nonRecursive(userChoice.second);
+
+        animate(result);
+    }
+
+    // $0: 确认还是取消，$1: 选择的起点。
+    QPair<int, int> askForTraverseStartIndex() {
         auto message = new QMessageBox(this);
+        auto startIndexChooser = new QComboBox(message);
         message->setText("选择遍历起点");
         message->setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-
-        auto startIndexChooser = new QComboBox(message);
-
-        const auto &viewVertices = graphObject.getVertices();
-        const int size = viewVertices.size();
+        const int size = graphObject.getVertices().size();
         for (QVariant i = 0; i.value<int>() < size; i = i.value<int>() + 1) {
             startIndexChooser->addItem(i.toString());
         }
-
         message->exec();
-        if (message->result() == QMessageBox::Cancel) { return; }
 
-        const auto &result = model.deepFirstSearch_nonRecursive(startIndexChooser->currentText().toInt());
-        
-        // Animate
-        QString text;
+        return {message->result(), startIndexChooser->currentText().toInt()};
+    }
+
+    // 根据返回结果进行动画渲染。
+    void animate(const QPair<QVector<int>, QVector<std::deque<int>>> &result) {
+        const auto &viewVertices = graphObject.getVertices();
         QVariantList rawResult;
         auto sequenceAnimation = new QSequentialAnimationGroup;
         for (int index : result.first) {
-            // 添加结果的文字说明
             std::ostringstream oss;
-            oss << index << ' ';
-            const QString &temp = QString::fromStdString(oss.str());
-            text += temp;
-            rawResult.push_back(temp);
+            oss << index;
+            rawResult.push_back(QString::fromStdString(oss.str()));
 
             auto parallelAnimation = new QParallelAnimationGroup;
 
@@ -175,9 +180,13 @@ private:
             machine->setInitialState(states.first());
         }
 
-        // for (int i = 0; i < states.size() - 1; ++i) {
-        //     states[i]->addTransition(next, &QPushButton::clicked, states[i + 1]);
-        // }
+        auto timer = new QTimer(this);
+        timer->setInterval(1500);
+        timer->start();
+
+        for (int i = 0; i < states.size() - 1; ++i) {
+            states[i]->addTransition(timer, &QTimer::timeout, states[i + 1]);
+        }
         machine->start();
 
         sequenceAnimation->start(QPropertyAnimation::DeleteWhenStopped);

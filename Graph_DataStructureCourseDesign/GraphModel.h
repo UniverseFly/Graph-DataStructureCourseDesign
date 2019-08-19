@@ -33,11 +33,6 @@ public:
         const auto &indexOrder = QVector<int>::fromStdVector(result.indexOrder);
         const auto &containerInfo = QVector<std::deque<int>>::fromStdVector(result.containerCondition);
 
-        for (const auto &x : containerInfo) {
-            std::vector<int> vec{x.cbegin(), x.cend()};
-            qDebug() << QVector<int>::fromStdVector(vec);
-        }
-
         return {indexOrder, containerInfo};
     }
 };
