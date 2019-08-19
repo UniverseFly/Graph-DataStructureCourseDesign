@@ -10,11 +10,9 @@
 #include <QApplication>
 #include <QListView>
 #include "GraphModel.h"
-#include "GraphView.h"
-#include "GraphicsListObject"
+#include "GraphicsListObject.h"
 
-#include "NodeItem.h"
-#include "ContainerView.h"
+#include "GraphObject.h"
 
 #include <QDebug>
 #include <QLabel>
@@ -64,9 +62,11 @@ int main(int argc, char **argv) {
     // view.show();
 
     GraphicsListObject itemListView({1, 2, 9, 10, 25});
+    GraphObject graphObject;
     QGraphicsScene scene;
-    scene.addItem(&itemListView);
+    scene.addItem(&graphObject);
     QGraphicsView view;
+    view.scale(1.2, 1.2);
     view.setScene(&scene);
     view.show();
 

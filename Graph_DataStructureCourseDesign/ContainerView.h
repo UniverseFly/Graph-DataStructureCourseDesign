@@ -86,7 +86,6 @@ public:
     QVariantList getRaw() const { return raw; }
 
     void setRaw(QVariantList newRaw) {
-        qDebug() << newRaw;
         raw = newRaw;
         resetViewFromRaw();
     }
@@ -100,12 +99,6 @@ public:
         for (const auto &x : raw) {
             store(x.value<QString>());
         }
-    }
-
-    QPropertyAnimation *animationTo(const QVariantList &newRaw) {
-        auto animation = new QPropertyAnimation(this, "raw");
-        animation->setEndValue(newRaw);
-        return animation;
     }
 };
 

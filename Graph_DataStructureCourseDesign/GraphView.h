@@ -19,6 +19,7 @@
 #include "ArcItem.h"
 #include "NodeItem.h"
 #include "ContainerView.h"
+#include "GraphModel.h"
 #include <QVBoxLayout>
 #include <QTimer>
 #include <QDebug>

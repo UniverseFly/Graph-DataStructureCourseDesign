@@ -15,9 +15,13 @@
 
 struct GraphicsListObject : QGraphicsObject {
 #ifdef DEBUG
+
     FRIEND_MAIN
+
 #endif
-Q_PROPERTY(QVariantList raw WRITE resetToRaw)
+    Q_PROPERTY(QVariantList raw
+                       WRITE
+                       resetToRaw)
 private:
     QVector<QGraphicsObject *> items;
     QPoint storePoint = {0, 0};
@@ -36,11 +40,13 @@ public:
     }
 
     void resetToRaw(const QVariantList &rawValues) {
-        for (const auto &item : items) { delete item;}
+        for (const auto &item : items) { delete item; }
         items = {};
         storePoint = {0, 0};
         for (const auto &value : rawValues) { append(value); }
     }
+
+    const QVector<QGraphicsObject *> &getSubObjects() const { return items; }
 
     QRectF boundingRect() const override { return {}; }
 
