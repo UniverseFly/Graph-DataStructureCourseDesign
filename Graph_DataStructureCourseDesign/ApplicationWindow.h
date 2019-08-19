@@ -13,6 +13,7 @@
 #include <QAction>
 #include <QGraphicsView>
 #include <QCombobox>
+#include <QVariantList>
 #include <QLayout>
 #include "GraphModel.h"
 #include "GraphicsListObject.h"
@@ -118,7 +119,7 @@ private:
     }
 
     // 根据返回结果进行动画渲染。
-    void animate(const QPair<QVector<int>, QVector<std::deque<int>>> &result) {
+    void animate(const QPair<QVector<int>, QVector<QVariantList>> &result) {
         const auto &viewVertices = graphObject.getVertices();
         QVariantList rawResult;
         auto sequenceAnimation = new QSequentialAnimationGroup;
@@ -165,14 +166,8 @@ private:
         QVector<QState *> states;
         auto machine = new QStateMachine;
         for (const auto &containerState : result.second) {
-            QVariantList raw;
-            for (const auto &x : containerState) {
-                std::ostringstream oss;
-                oss << x;
-                raw.push_back(QString::fromStdString(oss.str()));
-            }
             auto state = new QState;
-            state->assignProperty(&containerInfo, "raw", raw);
+            state->assignProperty(&containerInfo, "raw", containerState);
             states.push_back(state);
             machine->addState(state);
         }

@@ -14,6 +14,7 @@
 #include <QVector>
 #include <deque>
 #include <QDebug>
+#include <QVariantList>
 
 struct GraphModel : QObject {
 Q_OBJECT
@@ -28,12 +29,19 @@ public:
         graph.addArc_withIndex(startIndex, endIndex);
     }
 
-    QPair<QVector<int>, QVector<std::deque<int>>> deepFirstSearch_nonRecursive(int index) {
+    QPair<QVector<int>, QVector<QVariantList>> deepFirstSearch_nonRecursive(int index) {
         const auto &result = deepFirstSearch_nonRecursive_withIndex(graph, index);
         const auto &indexOrder = QVector<int>::fromStdVector(result.indexOrder);
-        const auto &containerInfo = QVector<std::deque<int>>::fromStdVector(result.containerCondition);
+        const auto &containerInfo = result.containerCondition;
 
-        return {indexOrder, containerInfo};
+        QVector<QVariantList> converted;
+        for (const auto &deque : containerInfo) {
+            QVariantList list;
+            for (const auto &x : deque) { list.push_back(x); }
+            converted.push_back(std::move(list));
+        }
+
+        return {indexOrder, converted};
     }
 };
 
