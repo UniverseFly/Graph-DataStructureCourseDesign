@@ -11,6 +11,7 @@
 #include <QListView>
 #include "GraphModel.h"
 #include "GraphView.h"
+#include "GraphicsListObject"
 
 #include "NodeItem.h"
 #include "ContainerView.h"
@@ -59,10 +60,15 @@ int main(int argc, char **argv) {
     QApplication app(argc, argv);
     QApplication::setApplicationName("数据结构-图");
 
-    GraphView view;
+    // GraphView view;
+    // view.show();
+
+    GraphicsListObject itemListView({1, 2, 9, 10, 25});
+    QGraphicsScene scene;
+    scene.addItem(&itemListView);
+    QGraphicsView view;
+    view.setScene(&scene);
     view.show();
-
-
 
     return QApplication::exec();
 }

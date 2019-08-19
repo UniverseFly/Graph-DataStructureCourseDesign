@@ -17,7 +17,8 @@ Q_OBJECT
 private:
     QString text;
 public:
-    explicit NodeItem(const QString &text, bool movable = true) : text(text) {
+    explicit NodeItem(const QString &text, bool movable = true, QGraphicsItem *parent = nullptr) :
+            text(text), QGraphicsObject(parent) {
         if (movable) {
             setFlag(ItemIsMovable);
             setFlag(ItemSendsGeometryChanges);
