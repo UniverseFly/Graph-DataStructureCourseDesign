@@ -24,10 +24,17 @@
     addVertex();\
     addVertex();\
     addVertex();\
+    addVertex();\
     model.addArc(0, 1);\
     graphObject.addArc(0, 1);\
     model.addArc(1, 2);\
-    graphObject.addArc(1, 2);
+    graphObject.addArc(1, 2);\
+    model.addArc(0, 3);\
+    graphObject.addArc(0, 3);\
+    model.addArc(1, 2);\
+    graphObject.addArc(1, 2);\
+    model.addArc(1, 4);\
+    graphObject.addArc(1, 4);\
 
 struct ApplicationWindow : QMainWindow {
 Q_OBJECT
@@ -91,16 +98,30 @@ private:
         QObject::connect(addVertex, &QAction::triggered, this, &ApplicationWindow::addVertex);
         QObject::connect(addArc, &QAction::triggered, this, &ApplicationWindow::addArc);
         QObject::connect(dfs_nonRecursive, &QAction::triggered, this, &ApplicationWindow::dfs_nonRecursive);
+        QObject::connect(dfs_recursive, &QAction::triggered, this, &ApplicationWindow::dfs_recursive);
+        QObject::connect(bfs, &QAction::triggered, this, &ApplicationWindow::bfs);
+
+    }
+
+    void bfs() {
+        auto userChoice = askForTraverseStartIndex();
+        if (userChoice.first == QMessageBox::Cancel) { return; }
+
+        animate(model.bfs(userChoice.second));
+    }
+
+    void dfs_recursive() {
+        auto userChoice = askForTraverseStartIndex();
+        if (userChoice.first == QMessageBox::Cancel) { return; }
+
+        animate( model.dfs_recursive(userChoice.second));
     }
 
     void dfs_nonRecursive() {
         auto userChoice = askForTraverseStartIndex();
-
         if (userChoice.first == QMessageBox::Cancel) { return; }
 
-        const auto &result = model.deepFirstSearch_nonRecursive(userChoice.second);
-
-        animate(result);
+        animate(model.dfs_nonRecursive(userChoice.second));
     }
 
     // $0: 确认还是取消，$1: 选择的起点。
@@ -166,13 +187,16 @@ private:
         QVector<QState *> states;
         auto machine = new QStateMachine;
         for (const auto &containerState : result.second) {
-            auto state = new QState;
+            auto state = new QState(machine);
             state->assignProperty(&containerInfo, "raw", containerState);
             states.push_back(state);
-            machine->addState(state);
         }
         if (!states.isEmpty()) {
             machine->setInitialState(states.first());
+        } else {
+            auto empty = new QState(machine);
+            empty->assignProperty(&containerInfo, "raw", {});
+            machine->setInitialState(empty);
         }
 
         auto timer = new QTimer(this);

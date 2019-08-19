@@ -21,6 +21,8 @@ Q_OBJECT
 private:
     Graph<int> graph;
 public:
+    using Result = QPair<QVector<int>, QVector<QVariantList>>;
+
     void addVertex() {
         graph.appendVertex(0);
     }
@@ -29,8 +31,22 @@ public:
         graph.addArc_withIndex(startIndex, endIndex);
     }
 
-    QPair<QVector<int>, QVector<QVariantList>> deepFirstSearch_nonRecursive(int index) {
-        const auto &result = deepFirstSearch_nonRecursive_withIndex(graph, index);
+    Result dfs_nonRecursive(int index) const {
+        return traverseAlgorithm(deepFirstSearch_nonRecursive_withIndex, index);
+    }
+
+    Result dfs_recursive(int index) const {
+        return traverseAlgorithm(deepFirstSearch_recursive_withIndex, index);
+    }
+
+    Result bfs(int index) const {
+        return traverseAlgorithm(breadthFirstSearch_withIndex, index);
+    }
+
+private:
+    // 接受函数指针，代表某种遍历算法。对所有不同的搜索算法进通用的行类型转换适配。
+    Result traverseAlgorithm(SearchResult algorithm(const Graph<int> &, int), int startIndex) const {
+        const auto &result = algorithm(graph, startIndex);
         const auto &indexOrder = QVector<int>::fromStdVector(result.indexOrder);
         const auto &containerInfo = result.containerCondition;
 
