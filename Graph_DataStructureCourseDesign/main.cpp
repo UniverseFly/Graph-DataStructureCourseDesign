@@ -9,6 +9,7 @@
 
 #include <QApplication>
 #include <QListView>
+#include "ApplicationWindow.h"
 #include "GraphModel.h"
 #include "GraphicsListObject.h"
 
@@ -18,6 +19,8 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QTimer>
+#include <QComboBox>
+#include <QListWidget>
 
 void testCase() {
     Graph<std::string> g;
@@ -61,14 +64,17 @@ int main(int argc, char **argv) {
     // GraphView view;
     // view.show();
 
-    GraphicsListObject itemListView({1, 2, 9, 10, 25});
-    GraphObject graphObject;
-    QGraphicsScene scene;
-    scene.addItem(&graphObject);
-    QGraphicsView view;
-    view.scale(1.2, 1.2);
-    view.setScene(&scene);
-    view.show();
+    ApplicationWindow window;
+    window.show();
+
+    // GraphicsListObject itemListView({1, 2, 9, 10, 25});
+    // GraphObject graphObject;
+    // QGraphicsScene scene;
+    // scene.addItem(&graphObject);
+    // QGraphicsView view;
+    // view.scale(1.2, 1.2);
+    // view.setScene(&scene);
+    // view.show();
 
     return QApplication::exec();
 }
