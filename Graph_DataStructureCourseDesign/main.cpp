@@ -13,7 +13,7 @@
 #include "GraphView.h"
 
 #include "NodeItem.h"
-#include "AbstractContainerView.h"
+#include "ContainerView.h"
 
 #include <QDebug>
 #include <QLabel>
@@ -59,18 +59,10 @@ int main(int argc, char **argv) {
     QApplication app(argc, argv);
     QApplication::setApplicationName("数据结构-图");
 
-    // GraphView view;
-    // view.show();
-
-    AbstractContainerView view;
+    GraphView view;
     view.show();
 
-    QTimer timer;
-    timer.setInterval(5000);
-    timer.setSingleShot(true);
-    timer.start();
 
-    QObject::connect(&timer, &QTimer::timeout, &view, &AbstractContainerView::fuck);
 
     return QApplication::exec();
 }

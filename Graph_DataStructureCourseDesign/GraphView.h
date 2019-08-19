@@ -18,6 +18,7 @@
 #include <QMessageBox>
 #include "ArcItem.h"
 #include "NodeItem.h"
+#include "ContainerView.h"
 #include <QVBoxLayout>
 #include <QTimer>
 #include <QDebug>
@@ -25,6 +26,7 @@
 #include <QStateMachine>
 #include <QtCore>
 #include <QTextEdit>
+#include <deque>
 
 struct GraphView : QGraphicsView {
 Q_OBJECT
@@ -40,8 +42,12 @@ private:
 private:
     QLineEdit *startLineEdit = new QLineEdit(this);
     QLineEdit *endLineEdit = new QLineEdit(this);
+    QLineEdit *searchIndex = new QLineEdit(this);
     QPushButton *result = new QPushButton(this);
     QPushButton *stackInfo = new QPushButton(this);
+    ContainerView *container = new ContainerView(this);
+    QPushButton *next = new QPushButton(this);
+    ContainerView *resultContainer = new ContainerView(this);
 public:
     explicit GraphView(QWidget *parent = nullptr) {
         auto scene = new QGraphicsScene(this);
@@ -80,9 +86,17 @@ public:
         okButton->move(0, 40);
         dfsButton->move(0, 100);
 
+        searchIndex->move(0, 130);
+
         result->move(0, 180);
 
         stackInfo->move(0, 220);
+
+        next->setText("next");
+        next->move(0, 140);
+
+        container->move(100, 0);
+        resultContainer->move(300, 0);
     }
 
     void addNode() {
@@ -133,21 +147,31 @@ public:
     }
 
     void deepFirstSearchShow() {
-        const auto &searchResult = model.deepFirstSearch_nonRecursive();
+        bool ok = false;
+        int startIndex = searchIndex->text().toInt(&ok);
+        if (!ok || startIndex >= nodes.size()) {
+            QMessageBox::warning(this, "", "Index out of range");
+            return;
+        }
+
+        const auto &searchResult = model.deepFirstSearch_nonRecursive(startIndex);
 
         QString text;
+        QVariantList rawResult;
         auto sequenceAnimation = new QSequentialAnimationGroup;
-        for (int index : searchResult) {
+        for (int index : searchResult.first) {
             // 添加结果的文字说明
             std::ostringstream oss;
             oss << index << ' ';
-            text += QString::fromStdString(oss.str());
+            const QString &temp = QString::fromStdString(oss.str());
+            text += temp;
+            rawResult.push_back(temp);
             auto position = QGraphicsView::mapFromScene(nodes[index]->pos());
 
             auto parallelAnimation = new QParallelAnimationGroup;
 
             auto scaleAnimation = new QPropertyAnimation(nodes[index], "scale");
-            scaleAnimation->setDuration(1200);
+            scaleAnimation->setDuration(1500);
             scaleAnimation->setStartValue(1);
             scaleAnimation->setKeyValueAt(0.5, 0);
             scaleAnimation->setEndValue(1);
@@ -165,9 +189,45 @@ public:
 
             sequenceAnimation->addAnimation(parallelAnimation);
         }
+        resultContainer->setRaw(rawResult);
+
+        auto group = new QSequentialAnimationGroup;
+
+        for (const auto &x : resultContainer->nodes) {
+            x->setOpacity(0);
+            auto animation = new QPropertyAnimation(x, "opacity");
+            animation->setStartValue(0);
+            animation->setEndValue(1);
+            animation->setDuration(1500);
+            group->addAnimation(animation);
+        }
+        group->start(QPropertyAnimation::DeleteWhenStopped);
+
+        QVector<QState *> states;
+        auto machine = new QStateMachine;
+        for (const auto &containerInfo : searchResult.second) {
+            QVariantList raw;
+            for (const auto &x : containerInfo) {
+                std::ostringstream oss;
+                oss << x;
+                raw.push_back(QString::fromStdString(oss.str()));
+            }
+            auto state = new QState;
+            state->assignProperty(container, "raw", raw);
+            states.push_back(state);
+            machine->addState(state);
+        }
+        if (!states.isEmpty()) {
+            machine->setInitialState(states.first());
+        }
+
+        for (int i = 0; i < states.size() - 1; ++i) {
+            states[i]->addTransition(next, &QPushButton::clicked, states[i + 1]);
+        }
+        machine->start();
+
         // set result label
         result->setText(text);
-        qDebug() << searchResult;
 
         sequenceAnimation->start(QPropertyAnimation::DeleteWhenStopped);
     }

@@ -12,6 +12,8 @@
 #include <string>
 #include <QPoint>
 #include <QVector>
+#include <deque>
+#include <QDebug>
 
 #define TEST_CASE \
     addVertex("hello", {20, 20});\
@@ -52,8 +54,17 @@ public:
         vertexPositions[index] = position;
     }
 
-    QVector<int> deepFirstSearch_nonRecursive() {
-        return QVector<int>::fromStdVector(deepFirstSearch_recursive_withIndex(graph, 0).indexOrder);
+    QPair<QVector<int>, QVector<std::deque<int>>> deepFirstSearch_nonRecursive(int index) {
+        const auto &result = deepFirstSearch_nonRecursive_withIndex(graph, index);
+        const auto &indexOrder = QVector<int>::fromStdVector(result.indexOrder);
+        const auto &containerInfo = QVector<std::deque<int>>::fromStdVector(result.containerCondition);
+
+        for (const auto &x : containerInfo) {
+            std::vector<int> vec{x.cbegin(), x.cend()};
+            qDebug() << QVector<int>::fromStdVector(vec);
+        }
+
+        return {indexOrder, containerInfo};
     }
 };
 
