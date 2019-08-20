@@ -11,7 +11,7 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 
-add_executable(Graph_DataStructureCourseDeign main.cpp GraphModel.h NodeItem.h ArcItem.h GraphicsListObject.h GraphObject.h ApplicationWindow.h)
+add_executable(Graph_DataStructureCourseDeign main.cpp GraphModel.h VertexItem.h ArcItem.h GraphicsListObject.h GraphObject.h ApplicationWindow.h)
 
 target_link_libraries(Graph_DataStructureCourseDeign Qt5::Widgets)
 target_link_libraries(Graph_DataStructureCourseDeign Qt5::Core)

@@ -58,8 +58,8 @@ public:
         scene->addItem(&searchResult);
         scene->addItem(&graphObject);
 
-        containerInfo.resetToRaw({1, 2, 3});
-        searchResult.resetToRaw({9, 9, 9, 9});
+        // containerInfo.resetToRaw({1, 2, 3});
+        // searchResult.resetToRaw({9, 9, 9, 9});
 
         // 设置视图优化
         view.setCacheMode(QGraphicsView::CacheBackground);

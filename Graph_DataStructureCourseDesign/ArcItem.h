@@ -30,7 +30,7 @@ public:
         QPointF destArrowP2 = end + QPointF(sin(angle - M_PI + M_PI / 3) * arrowSize,
                                             cos(angle - M_PI + M_PI / 3) * arrowSize);
 
-        painter->setPen(QPen(Qt::black, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        painter->setPen(QPen(Qt::black, 2.3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         painter->drawLine(line);
 
         painter->setBrush(Qt::black);

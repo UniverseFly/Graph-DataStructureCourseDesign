@@ -2,8 +2,8 @@
 // Created by 魏宇翔 on 2019-08-17.
 //
 
-#ifndef GRAPH_DATASTRUCTURECOURSEDEIGN_NODEITEM_H
-#define GRAPH_DATASTRUCTURECOURSEDEIGN_NODEITEM_H
+#ifndef GRAPH_DATASTRUCTURECOURSEDEIGN_VERTEXITEM_H
+#define GRAPH_DATASTRUCTURECOURSEDEIGN_VERTEXITEM_H
 
 
 #include <QGraphicsItem>
@@ -12,12 +12,14 @@
 #include <QPen>
 #include "ArcItem.h"
 
-struct NodeItem : QGraphicsObject {
+struct VertexItem : QGraphicsObject {
 Q_OBJECT
 private:
     QString text;
+private:
+    QRect bound = {-20, -20, 40, 40};
 public:
-    explicit NodeItem(const QString &text, bool movable = true, QGraphicsItem *parent = nullptr) :
+    explicit VertexItem(int radius, const QString &text, bool movable = true, QGraphicsItem *parent = nullptr) :
             text(text), QGraphicsObject(parent) {
         if (movable) {
             setFlag(ItemIsMovable);
@@ -25,21 +27,24 @@ public:
         }
         setCacheMode(DeviceCoordinateCache);
         setZValue(int(-1));
+        setScale(radius / 20.0);
     }
 
     QRectF boundingRect() const override {
-        return {-10, -10, 20, 20};
+        double radius = bound.width() / 2.0;
+        radius += 3;
+        return {-radius, -radius, 2 * radius, 2 * radius};
     }
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
         painter->setBrush(Qt::lightGray);
-        painter->setPen(QPen(Qt::black, 2, Qt::SolidLine));
+        painter->setPen(QPen(Qt::black, 3.3, Qt::SolidLine));
         QFont font;
-        font.setPointSize(10);
+        font.setPointSize(15);
         painter->setFont(font);
 
-        painter->drawEllipse(-10, -10, 20, 20);
-        painter->drawText(-5, -5, 10, 10, Qt::AlignCenter, text);
+        painter->drawEllipse(bound);
+        painter->drawText(bound, Qt::AlignCenter, text);
     }
 
 protected:
@@ -63,8 +68,8 @@ protected:
 
 signals:
 
-    void nodePositionChanged(NodeItem *node);
+    void nodePositionChanged(VertexItem *node);
 };
 
 
-#endif //GRAPH_DATASTRUCTURECOURSEDEIGN_NODEITEM_H
+#endif //GRAPH_DATASTRUCTURECOURSEDEIGN_VERTEXITEM_H

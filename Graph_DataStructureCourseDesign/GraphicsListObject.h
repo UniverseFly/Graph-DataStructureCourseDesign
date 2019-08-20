@@ -12,7 +12,8 @@
 #include <QGraphicsWidget>
 #include <sstream>
 #include <QDebug>
-#include "NodeItem.h"
+#include "VertexItem.h"
+
 
 struct GraphicsListObject : QGraphicsObject {
     Q_OBJECT
@@ -26,17 +27,20 @@ private:
     QVector<QGraphicsObject *> items;
     QPoint storePoint = {0, 0};
     int space = 5;
+private:
+    const int radius = 15;
 public:
     explicit GraphicsListObject(const QVariantList &rawValues = {}, QGraphicsItem *parent = nullptr) :
             QGraphicsObject(parent) {
-        resetToRaw(rawValues);
+        setFlag(ItemIsMovable);
+        resetToRaw({"空"});
     }
 
     void append(const QVariant &value) {
-        auto item = new NodeItem(value.toString(), false, this);
+        auto item = new VertexItem(radius, value.toString(), false, this);
         items.push_back(item);
         item->setPos(storePoint);
-        storePoint += {int(item->boundingRect().width() + space), 0};
+        storePoint += {int(item->scale() * item->boundingRect().width() + space), 0};
     }
 
     void resetToRaw(const QVariantList &rawValues) {
@@ -48,9 +52,11 @@ public:
 
     const QVector<QGraphicsObject *> &getSubObjects() const { return items; }
 
-    QRectF boundingRect() const override { return {}; }
+    QRectF boundingRect() const override {
+        return {double(-radius), double(-radius), double(storePoint.x()), 2.0 * radius};
+    }
 
-    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override {}
+    void paint(QPainter * p, const QStyleOptionGraphicsItem *, QWidget *) override {}
 };
 
 
