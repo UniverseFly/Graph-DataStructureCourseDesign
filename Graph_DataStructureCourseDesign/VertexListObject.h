@@ -15,7 +15,7 @@
 #include "VertexItem.h"
 
 
-struct GraphicsListObject : QGraphicsObject {
+struct VertexListObject : QGraphicsObject {
     Q_OBJECT
 #ifdef DEBUG
 
@@ -30,7 +30,7 @@ private:
 private:
     const int radius = 15;
 public:
-    explicit GraphicsListObject(const QVariantList &rawValues = {}, QGraphicsItem *parent = nullptr) :
+    explicit VertexListObject(const QVariantList &rawValues = {}, QGraphicsItem *parent = nullptr) :
             QGraphicsObject(parent) {
         setFlag(ItemIsMovable);
         resetToRaw({"空"});
@@ -56,7 +56,7 @@ public:
         return {double(-radius), double(-radius), double(storePoint.x()), 2.0 * radius};
     }
 
-    void paint(QPainter * p, const QStyleOptionGraphicsItem *, QWidget *) override {}
+    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override {}
 };
 
 

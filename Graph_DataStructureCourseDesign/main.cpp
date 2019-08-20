@@ -11,9 +11,11 @@
 #include <QListView>
 #include "ApplicationWindow.h"
 #include "GraphModel.h"
-#include "GraphicsListObject.h"
+#include "VertexListObject.h"
 
 #include "GraphObject.h"
+#include "AdjointNodeObject.h"
+#include "AdjointListObject.h"
 
 #include <QDebug>
 #include <QLabel>
@@ -61,20 +63,20 @@ int main(int argc, char **argv) {
     QApplication app(argc, argv);
     QApplication::setApplicationName("数据结构-图");
 
-    // GraphView view;
-    // view.show();
-
     ApplicationWindow window;
     window.show();
 
-    // GraphicsListObject itemListView({1, 2, 9, 10, 25});
-    // GraphObject graphObject;
-    // QGraphicsScene scene;
-    // scene.addItem(&graphObject);
-    // QGraphicsView view;
-    // view.scale(1.2, 1.2);
-    // view.setScene(&scene);
-    // view.show();
+    VertexListObject itemListView({1, 2, 9, 10, 25});
+    AdjointListObject graphObject;
+    graphObject.resetFromRaw(1, {2, 3, 4});
+    graphObject.resetFromRaw(1, {});
+    graphObject.resetFromRaw(1, {2, 3, 4});
+    QGraphicsScene scene;
+    scene.addItem(&graphObject);
+    QGraphicsView view;
+    view.scale(1.2, 1.2);
+    view.setScene(&scene);
+    view.show();
 
     return QApplication::exec();
 }

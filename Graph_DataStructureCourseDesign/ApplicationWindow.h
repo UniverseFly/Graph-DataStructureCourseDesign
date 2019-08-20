@@ -16,7 +16,7 @@
 #include <QVariantList>
 #include <QLayout>
 #include "GraphModel.h"
-#include "GraphicsListObject.h"
+#include "VertexListObject.h"
 #include "GraphObject.h"
 
 #define TEST_CASE \
@@ -42,9 +42,9 @@ private:
     GraphModel model;
     QGraphicsView view;
     // 栈、队列的元素信息
-    GraphicsListObject containerInfo;
+    VertexListObject containerInfo;
     // 用来显示搜索结果
-    GraphicsListObject searchResult;
+    VertexListObject searchResult;
     // 用于显示的视图
     GraphObject graphObject;
 public:
