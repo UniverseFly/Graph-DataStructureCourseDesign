@@ -16,6 +16,7 @@
 #include "GraphObject.h"
 #include "AdjointNodeObject.h"
 #include "AdjointListObject.h"
+#include "AdjointListGraphObject.h"
 
 #include <QDebug>
 #include <QLabel>
@@ -66,17 +67,17 @@ int main(int argc, char **argv) {
     ApplicationWindow window;
     window.show();
 
-    VertexListObject itemListView({1, 2, 9, 10, 25});
-    AdjointListObject graphObject;
-    graphObject.resetFromRaw(1, {2, 3, 4});
-    graphObject.resetFromRaw(1, {});
-    graphObject.resetFromRaw(1, {2, 3, 4});
-    QGraphicsScene scene;
-    scene.addItem(&graphObject);
-    QGraphicsView view;
-    view.scale(1.2, 1.2);
-    view.setScene(&scene);
-    view.show();
+    // VertexListObject itemListView({1, 2, 9, 10, 25});
+    // AdjointListGraphObject graphObject;
+    // graphObject.resetFromRaw({{1, {2, 3, 4}}});
+    // graphObject.resetFromRaw({{1, {2, 3, 4}}, {2, {4, 4, 5}}});
+    // graphObject.resetFromRaw({{4, {2, 3, 4}}, {2, {4, 4, 5}}, {2, {4, 4, 5}}, {2, {4, 4, 5}}, {2, {4, 4, 5}}, {2, {4, 4, 5}}, {2, {4, 4, 5}}, {2, {4, 4, 5}}, {2, {4, 4, 5}}, {2, {4, 4, 5}}});
+    // QGraphicsScene scene;
+    // scene.addItem(&graphObject);
+    // QGraphicsView view;
+    // view.scale(0.5, 0.5);
+    // view.setScene(&scene);
+    // view.show();
 
     return QApplication::exec();
 }

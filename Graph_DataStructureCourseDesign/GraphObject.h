@@ -44,7 +44,7 @@ public:
     void addVertex() {
         QVariant text = nodes.size();
         auto node = new VertexItem(vertexRadius, text.toString(), true, this);
-        QObject::connect(node, &VertexItem::nodePositionChanged, this, &GraphObject::updateItem);
+        node->setGraph(this);
         node->setPos(0, 0);
         nodes.push_back(node);
     }
@@ -66,6 +66,8 @@ public:
     void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override {}
 
 private:
+    friend struct VertexItem;
+
     void updateItem(VertexItem *nodeToUpdate) {
         const auto &newPosition = QPoint(nodeToUpdate->pos().x(), nodeToUpdate->pos().y());
         int index = findNodeIndex(nodeToUpdate);

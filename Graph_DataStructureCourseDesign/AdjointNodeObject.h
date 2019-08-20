@@ -23,6 +23,7 @@ public:
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) override {
         painter->setPen(QPen(Qt::black, 2.3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        painter->setBrush(QColor(245, 245, 245));
         painter->drawRect(boundingRect());
         painter->drawLine(10, 17, 10, -17);
         painter->drawText(QRect(-40, -17, 50, 34), Qt::AlignCenter, text);

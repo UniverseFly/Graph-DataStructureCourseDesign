@@ -18,6 +18,7 @@
 #include "GraphModel.h"
 #include "VertexListObject.h"
 #include "GraphObject.h"
+#include "AdjointListGraphObject.h"
 
 #define TEST_CASE \
     addVertex();\
@@ -36,40 +37,43 @@
     model.addArc(1, 4);\
     graphObject.addArc(1, 4);\
 
-struct ApplicationWindow : QMainWindow {
+
+struct ApplicationWindow : QGraphicsView {
 Q_OBJECT
 private:
     GraphModel model;
-    QGraphicsView view;
     // 栈、队列的元素信息
     VertexListObject containerInfo;
     // 用来显示搜索结果
     VertexListObject searchResult;
     // 用于显示的视图
     GraphObject graphObject;
+    // 邻接表的显示
+    AdjointListGraphObject adjointListGraph;
 public:
     explicit ApplicationWindow(QWidget *parent = nullptr) :
-            QMainWindow(parent), view(this) {
-        containerInfo.setPos(-400, -300);
-        searchResult.setPos(-400, -150);
+            QGraphicsView(parent) {
+        containerInfo.setPos(-500, 0);
+        searchResult.setPos(-500, 150);
+        adjointListGraph.setPos(-500, 300);
 
-        auto scene = new QGraphicsScene(QRectF{-400, -300, 800, 600}, this);
+        auto scene = new QGraphicsScene(QRect(-600, -600, 1200, 1200), this);
         scene->addItem(&containerInfo);
         scene->addItem(&searchResult);
         scene->addItem(&graphObject);
+        scene->addItem(&adjointListGraph);
 
-        // containerInfo.resetToRaw({1, 2, 3});
-        // searchResult.resetToRaw({9, 9, 9, 9});
+        containerInfo.resetToRaw({1, 2, 3});
+        searchResult.resetToRaw({9, 9, 9, 9});
 
         // 设置视图优化
-        view.setCacheMode(QGraphicsView::CacheBackground);
-        view.setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-        view.setRenderHint(QPainter::Antialiasing);
-        view.setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-        view.scale(qreal(1.2), qreal(1.2));
-        view.setScene(scene);
+        setCacheMode(QGraphicsView::CacheBackground);
+        setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+        setRenderHint(QPainter::Antialiasing);
+        setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+        // scale(qreal(1.2), qreal(1.2));
+        setScene(scene);
 
-        setCentralWidget(&view);
         initMenu();
 
         TEST_CASE
@@ -77,8 +81,9 @@ public:
 
 private:
     void initMenu() {
-        auto structure = menuBar()->addMenu("结构");
-        auto algorithms = menuBar()->addMenu("算法");
+        auto menuBar = new QMenuBar(this);
+        auto structure = menuBar->addMenu("结构");
+        auto algorithms = menuBar->addMenu("算法");
 
         auto addVertex = new QAction("添加顶点", this);
         auto addArc = new QAction("添加弧", this);
@@ -114,7 +119,7 @@ private:
         auto userChoice = askForTraverseStartIndex();
         if (userChoice.first == QMessageBox::Cancel) { return; }
 
-        animate( model.dfs_recursive(userChoice.second));
+        animate(model.dfs_recursive(userChoice.second));
     }
 
     void dfs_nonRecursive() {
@@ -255,6 +260,20 @@ private:
         model.addArc(start, end);
         graphObject.addArc(start, end);
     }
+
+// protected:
+//     void wheelEvent(QWheelEvent *event) override {
+//         scaleView(pow((double) 2, -event->delta() / 240.0));
+//     }
+//
+// private:
+//     void scaleView(qreal scaleFactor) {
+//         qreal factor = transform().scale(scaleFactor, scaleFactor).mapRect(QRectF(0, 0, 1, 1)).width();
+//         if (factor < 0.07 || factor > 100)
+//             return;
+//
+//         scale(scaleFactor, scaleFactor);
+//     }
 };
 
 

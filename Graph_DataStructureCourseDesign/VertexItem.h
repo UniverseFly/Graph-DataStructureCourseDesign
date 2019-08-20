@@ -12,15 +12,21 @@
 #include <QPen>
 #include "ArcItem.h"
 
-struct VertexItem : QGraphicsObject {
+struct GraphObject;
+
+struct VertexItem : QGraphicsItem {
 Q_OBJECT
 private:
     QString text;
-private:
+    GraphObject *graph = nullptr;
     QRect bound = {-20, -20, 40, 40};
+private:
+    friend struct GraphObject;
+
+    void setGraph(GraphObject *);
 public:
     explicit VertexItem(int radius, const QString &text, bool movable = true, QGraphicsItem *parent = nullptr) :
-            text(text), QGraphicsObject(parent) {
+            text(text), QGraphicsItem(parent) {
         if (movable) {
             setFlag(ItemIsMovable);
             setFlag(ItemSendsGeometryChanges);
@@ -37,7 +43,7 @@ public:
     }
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
-        painter->setBrush(Qt::lightGray);
+        painter->setBrush(QColor(235, 235, 235));
         painter->setPen(QPen(Qt::black, 3.3, Qt::SolidLine));
         QFont font;
         font.setPointSize(15);
@@ -48,13 +54,7 @@ public:
     }
 
 protected:
-    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override {
-        if (change == ItemPositionHasChanged) {
-            emit nodePositionChanged(this);
-        }
-
-        return QGraphicsItem::itemChange(change, value);
-    }
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
         update();
@@ -65,10 +65,6 @@ protected:
         update();
         QGraphicsItem::mouseReleaseEvent(event);
     }
-
-signals:
-
-    void nodePositionChanged(VertexItem *node);
 };
 
 
