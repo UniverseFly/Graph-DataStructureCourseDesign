@@ -71,7 +71,7 @@ public:
         setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
         setRenderHint(QPainter::Antialiasing);
         setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-        // scale(qreal(1.2), qreal(1.2));
+        scale(qreal(1.2), qreal(1.2));
         setScene(scene);
 
         initMenu();

@@ -10,50 +10,45 @@
 #include <QPainter>
 #include <cmath>
 
+struct VertexItem;
+
 struct ArcItem : QGraphicsItem {
+    friend struct GraphObject;
+    friend struct VertexItem;
 private:
     QPoint start;
     QPoint end;
+    VertexItem *source = nullptr;
+    VertexItem *destination = nullptr;
 public:
     ArcItem(const QPoint &start, const QPoint &end, QGraphicsItem *item = nullptr) :
             start(start), end(end), QGraphicsItem(item) {}
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) override {
-        QLine line(start, end);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) override;
 
-        // Draw the arrows
-        double angle = std::atan2(-line.dy(), line.dx());
-
-        int arrowSize = 10;
-        QPointF destArrowP1 = end + QPointF(sin(angle - M_PI / 3) * arrowSize,
-                                            cos(angle - M_PI / 3) * arrowSize);
-        QPointF destArrowP2 = end + QPointF(sin(angle - M_PI + M_PI / 3) * arrowSize,
-                                            cos(angle - M_PI + M_PI / 3) * arrowSize);
-
-        painter->setPen(QPen(Qt::black, 2.3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-        painter->drawLine(line);
-
-        painter->setBrush(Qt::black);
-        painter->drawPolygon(QPolygonF() << line.p2() << destArrowP1 << destArrowP2);
+    QRectF boundingRect() const override {
+        qreal extra = 5.0;
+        return QRectF{start, end}.normalized().adjusted(-extra, -extra, extra, extra);;
     }
-
-    QRectF boundingRect() const override { return {start, end}; }
 
     const QPoint &getEnd() const { return end; }
 
     void setStart(const QPoint &start) {
-        prepareGeometryChange();
         ArcItem::start = start;
     }
 
     void setEnd(const QPoint &end) {
-        prepareGeometryChange();
         ArcItem::end = end;
     }
 
     const QPoint &getStart() const {
         return start;
     }
+
+private:
+    void setVertices(VertexItem *source, VertexItem *destination);
+
+    void adjustFromVertices();
 };
 
 

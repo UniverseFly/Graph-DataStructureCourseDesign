@@ -2,18 +2,14 @@
 // Created by 魏宇翔 on 2019-08-20.
 //
 
+#include "ArcItem.h"
 #include "VertexItem.h"
-#include "GraphObject.h"
-
 
 QVariant VertexItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value) {
     if (change == ItemPositionHasChanged) {
-        graph->updateItem(this);
+        for (const auto &arc : arcs) {
+            arc->adjustFromVertices();
+        }
     }
-
     return QGraphicsItem::itemChange(change, value);
-}
-
-void VertexItem::setGraph(GraphObject *graph) {
-    this->graph = graph;
 }

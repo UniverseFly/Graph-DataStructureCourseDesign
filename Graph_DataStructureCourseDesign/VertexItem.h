@@ -9,37 +9,37 @@
 #include <QGraphicsItem>
 #include <QPainter>
 #include <QList>
+#include <QVector>
 #include <QPen>
-#include "ArcItem.h"
 
 struct GraphObject;
+struct ArcItem;
 
-struct VertexItem : QGraphicsItem {
+struct VertexItem : QGraphicsObject {
 Q_OBJECT
+    friend struct ArcItem;
+    friend struct GraphObject;
 private:
     QString text;
     GraphObject *graph = nullptr;
+    QVector<ArcItem *> arcs;
     QRect bound = {-20, -20, 40, 40};
-private:
-    friend struct GraphObject;
-
-    void setGraph(GraphObject *);
+    int radius;
 public:
     explicit VertexItem(int radius, const QString &text, bool movable = true, QGraphicsItem *parent = nullptr) :
-            text(text), QGraphicsItem(parent) {
+            text(text), QGraphicsObject(parent), radius(radius) {
         if (movable) {
             setFlag(ItemIsMovable);
             setFlag(ItemSendsGeometryChanges);
         }
         setCacheMode(DeviceCoordinateCache);
-        setZValue(int(-1));
+        setZValue(-1);
         setScale(radius / 20.0);
     }
 
     QRectF boundingRect() const override {
-        double radius = bound.width() / 2.0;
-        radius += 3;
-        return {-radius, -radius, 2 * radius, 2 * radius};
+        double adjustedRadius = radius + 6.0;
+        return {-adjustedRadius, -adjustedRadius, 2 * adjustedRadius, 2 * adjustedRadius};
     }
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
@@ -55,16 +55,6 @@ public:
 
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
-
-    void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
-        update();
-        QGraphicsItem::mousePressEvent(event);
-    }
-
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override {
-        update();
-        QGraphicsItem::mouseReleaseEvent(event);
-    }
 };
 
 

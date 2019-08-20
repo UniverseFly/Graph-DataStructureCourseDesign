@@ -53,7 +53,8 @@ public:
     const QVector<QGraphicsObject *> &getSubObjects() const { return items; }
 
     QRectF boundingRect() const override {
-        return {double(-radius), double(-radius), double(storePoint.x()), 2.0 * radius};
+        double adjustedRadius = radius + 7.0;
+        return {-adjustedRadius, -adjustedRadius, double(storePoint.x()), 2 * adjustedRadius};
     }
 
     void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override {}

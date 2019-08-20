@@ -24,14 +24,15 @@
 #include <QStateMachine>
 #include <QTextEdit>
 #include <QLineEdit>
-#include <deque>
+#include <QSet>
 #include "GraphModel.h"
+#include "ArcItem.h"
 
 struct GraphObject : QGraphicsObject {
 Q_OBJECT
 private:
     QVector<VertexItem *> nodes;
-    QMap<QPair<int, int>, ArcItem *> arcs;
+    QSet<QPair<int, int>> arcs;
 public:
     static constexpr int vertexRadius = 20;
 public:
@@ -39,57 +40,31 @@ public:
 
     const QVector<VertexItem *> &getVertices() const { return nodes; }
 
-    QVector<QPair<int, int>> getArcs() const { return arcs.keys().toVector(); }
+    const QSet<QPair<int, int>> &getArcs() const { return arcs; }
 
     void addVertex() {
         QVariant text = nodes.size();
         auto node = new VertexItem(vertexRadius, text.toString(), true, this);
-        node->setGraph(this);
         node->setPos(0, 0);
         nodes.push_back(node);
     }
 
     void addArc(int start, int end) {
-        if (start < 0 || start >= nodes.size() || end < 0 || end >= nodes.size()) { return; }
-        const auto &startPosition = nodes[start]->pos().toPoint();
-        const auto &endPosition = nodes[end]->pos().toPoint();
-        QLineF lineF(startPosition, endPosition);
-        QPointF offset(vertexRadius * lineF.dx() / lineF.length(), vertexRadius * lineF.dy() / lineF.length());
+        // 不需要起点和终点，通过节点初始化
+        auto newArc = new ArcItem({}, {}, this);
+        arcs.insert({start, end});
 
-        auto newArc = new ArcItem(startPosition + QPoint(offset.x(), offset.y()),
-                                  endPosition - QPoint(offset.x(), offset.y()), this);
-        arcs.insert({start, end}, newArc);
+        const auto &source = nodes[start];
+        const auto &destination = nodes[end];
+
+        newArc->setVertices(source, destination);
+        source->arcs.push_back(newArc);
+        destination->arcs.push_back(newArc);
     }
 
     QRectF boundingRect() const override { return {}; }
 
     void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override {}
-
-private:
-    friend struct VertexItem;
-
-    void updateItem(VertexItem *nodeToUpdate) {
-        const auto &newPosition = QPoint(nodeToUpdate->pos().x(), nodeToUpdate->pos().y());
-        int index = findNodeIndex(nodeToUpdate);
-        if (index == -1) { return; }
-
-        auto iter = arcs.cbegin();
-        while (iter != arcs.cend()) {
-            const auto &startPosition = nodes[iter.key().first]->pos().toPoint();
-            const auto &endPosition = nodes[iter.key().second]->pos().toPoint();
-
-            QLineF lineF(startPosition, endPosition);
-            QPointF offset(vertexRadius * lineF.dx() / lineF.length(), vertexRadius * lineF.dy() / lineF.length());
-
-            auto newStart = startPosition + QPoint(offset.x(), offset.y());
-            auto newEnd = endPosition - QPoint(offset.x(), offset.y());
-            if (iter.key().first == index || iter.key().second == index) {
-                iter.value()->setStart(newStart);
-                iter.value()->setEnd(newEnd);
-            }
-            ++iter;
-        }
-    }
 
 private:
     int findNodeIndex(VertexItem *nodeToFind) const {
