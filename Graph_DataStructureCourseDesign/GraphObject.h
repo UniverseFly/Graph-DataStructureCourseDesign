@@ -42,6 +42,12 @@ public:
 
     const QSet<QPair<int, int>> &getArcs() const { return arcs; }
 
+    void reset() {
+        for (const auto &node : nodes) { delete node; }
+        nodes = {};
+        arcs = {};
+    }
+
     void addVertex() {
         QVariant text = nodes.size();
         auto node = new VertexItem(vertexRadius, text.toString(), true, this);
@@ -58,6 +64,7 @@ public:
         const auto &destination = nodes[end];
 
         newArc->setVertices(source, destination);
+        newArc->adjustFromVertices();
         source->arcs.push_back(newArc);
         destination->arcs.push_back(newArc);
     }

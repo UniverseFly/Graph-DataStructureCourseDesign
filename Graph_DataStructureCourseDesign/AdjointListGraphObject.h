@@ -20,13 +20,13 @@ private:
 public:
     explicit AdjointListGraphObject(QGraphicsItem *parent = nullptr) : QGraphicsObject(parent) {
         setFlag(ItemIsMovable);
-        setCacheMode(DeviceCoordinateCache);
     }
 
     void resetFromRaw(const QVector<QPair<QVariant, QSet<int>>> &rawValue) {
         for (const auto &ptr : rows) { delete ptr; }
         rows = {};
 
+        prepareGeometryChange();
         pointToStore = {0, 0};
         for (const auto &pair : rawValue) {
             auto row = new AdjointListObject(this);

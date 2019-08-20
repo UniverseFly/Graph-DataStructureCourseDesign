@@ -36,6 +36,7 @@
     graphObject.addArc(1, 2);\
     model.addArc(1, 4);\
     graphObject.addArc(1, 4);\
+    adjointListGraph.resetFromRaw(model.getAdjointList());
 
 
 struct ApplicationWindow : QGraphicsView {
@@ -52,30 +53,30 @@ private:
     AdjointListGraphObject adjointListGraph;
 public:
     explicit ApplicationWindow(QWidget *parent = nullptr) :
-            QGraphicsView(parent) {
-        containerInfo.setPos(-500, 0);
-        searchResult.setPos(-500, 150);
-        adjointListGraph.setPos(-500, 300);
+            containerInfo("栈、队列情况"), searchResult("遍历结果"), QGraphicsView(parent) {
+        containerInfo.setPos(-500, -280);
+        searchResult.setPos(-500, -150);
+        adjointListGraph.setPos(-480, 0);
 
-        auto scene = new QGraphicsScene(QRect(-600, -600, 1200, 1200), this);
+        auto scene = new QGraphicsScene(QRect(-600, -450, 1200, 900), this);
         scene->addItem(&containerInfo);
         scene->addItem(&searchResult);
         scene->addItem(&graphObject);
         scene->addItem(&adjointListGraph);
 
-        containerInfo.resetToRaw({1, 2, 3});
-        searchResult.resetToRaw({9, 9, 9, 9});
+        containerInfo.resetToRaw({"空"});
+        searchResult.resetToRaw({"空"});
 
         // 设置视图优化
         setCacheMode(QGraphicsView::CacheBackground);
         setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
         setRenderHint(QPainter::Antialiasing);
         setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-        scale(qreal(1.2), qreal(1.2));
         setScene(scene);
 
         initMenu();
 
+        resize(1200, 900);
         TEST_CASE
     }
 
@@ -87,13 +88,14 @@ private:
 
         auto addVertex = new QAction("添加顶点", this);
         auto addArc = new QAction("添加弧", this);
+        auto clearGraph = new QAction("清空顶点");
         auto dfs = new QMenu("深度优先遍历", this);
         auto bfs = new QAction("广度优先遍历", this);
 
         auto dfs_recursive = new QAction("递归", this);
         auto dfs_nonRecursive = new QAction("非递归", this);
 
-        structure->addActions({addVertex, addArc});
+        structure->addActions({addVertex, addArc, clearGraph});
 
         algorithms->addMenu(dfs);
         algorithms->addAction(bfs);
@@ -102,46 +104,69 @@ private:
 
         QObject::connect(addVertex, &QAction::triggered, this, &ApplicationWindow::addVertex);
         QObject::connect(addArc, &QAction::triggered, this, &ApplicationWindow::addArc);
+        QObject::connect(clearGraph, &QAction::triggered, this, &ApplicationWindow::clearGraph);
         QObject::connect(dfs_nonRecursive, &QAction::triggered, this, &ApplicationWindow::dfs_nonRecursive);
         QObject::connect(dfs_recursive, &QAction::triggered, this, &ApplicationWindow::dfs_recursive);
         QObject::connect(bfs, &QAction::triggered, this, &ApplicationWindow::bfs);
+    }
 
+    void clearGraph() {
+        model.reset();
+        graphObject.reset();
+        adjointListGraph.resetFromRaw({});
     }
 
     void bfs() {
         auto userChoice = askForTraverseStartIndex();
-        if (userChoice.first == QMessageBox::Cancel) { return; }
+        if (!userChoice.first) { return; }
 
         animate(model.bfs(userChoice.second));
     }
 
     void dfs_recursive() {
         auto userChoice = askForTraverseStartIndex();
-        if (userChoice.first == QMessageBox::Cancel) { return; }
+        if (!userChoice.first) { return; }
 
         animate(model.dfs_recursive(userChoice.second));
     }
 
     void dfs_nonRecursive() {
         auto userChoice = askForTraverseStartIndex();
-        if (userChoice.first == QMessageBox::Cancel) { return; }
+        if (!userChoice.first) { return; }
 
         animate(model.dfs_nonRecursive(userChoice.second));
     }
 
     // $0: 确认还是取消，$1: 选择的起点。
-    QPair<int, int> askForTraverseStartIndex() {
+    QPair<bool, int> askForTraverseStartIndex() {
         auto message = new QMessageBox(this);
         auto startIndexChooser = new QComboBox(message);
+
         message->setText("选择遍历起点");
         message->setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        auto layout = new QVBoxLayout;
+
+        layout->addWidget(startIndexChooser);
+        message->layout()->addItem(layout);
+
         const int size = graphObject.getVertices().size();
         for (QVariant i = 0; i.value<int>() < size; i = i.value<int>() + 1) {
             startIndexChooser->addItem(i.toString());
         }
         message->exec();
 
-        return {message->result(), startIndexChooser->currentText().toInt()};
+        bool flagResult = true;
+        if (message->result() == QMessageBox::Cancel) {
+            return {false, -1};
+        }
+
+        int valueResult = startIndexChooser->currentText().toInt(&flagResult);
+        if (!flagResult) {
+            QMessageBox::warning(this, "Invalid index", "无效的起始顶点");
+            return {false, -1};
+        }
+
+        return {flagResult, valueResult};
     }
 
     // 根据返回结果进行动画渲染。
@@ -219,6 +244,7 @@ private:
     void addVertex() {
         model.addVertex();
         graphObject.addVertex();
+        adjointListGraph.resetFromRaw(model.getAdjointList());
     }
 
     void addArc() {
@@ -259,6 +285,7 @@ private:
 
         model.addArc(start, end);
         graphObject.addArc(start, end);
+        adjointListGraph.resetFromRaw(model.getAdjointList());
     }
 
 // protected:

@@ -43,6 +43,24 @@ public:
         return traverseAlgorithm(breadthFirstSearch_withIndex, index);
     }
 
+    QVector<QPair<QVariant, QSet<int>>> getAdjointList() const {
+        QVector<QPair<QVariant, QSet<int>>> result;
+        for (int index = 0; index < graph.verticesCount(); ++index) {
+            const auto &vertex = graph.vertexAt(index);
+
+            QSet<int> adjNodes;
+            for (const auto &node : vertex.getAdjList()) { adjNodes.insert(node); }
+
+            QPair<QVariant, QSet<int>> pair{index, adjNodes};
+            result.push_back(std::move(pair));
+        }
+        return result;
+    }
+
+    void reset() {
+        graph = {};
+    }
+
 private:
     // 接受函数指针，代表某种遍历算法。对所有不同的搜索算法进通用的行类型转换适配。
     Result traverseAlgorithm(SearchResult algorithm(const Graph<int> &, int), int startIndex) const {

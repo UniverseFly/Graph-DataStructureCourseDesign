@@ -16,24 +16,19 @@
 
 
 struct VertexListObject : QGraphicsObject {
-    Q_OBJECT
-#ifdef DEBUG
-
-    FRIEND_MAIN
-
-#endif
-    Q_PROPERTY(QVariantList raw WRITE resetToRaw)
+Q_OBJECT
+Q_PROPERTY(QVariantList raw WRITE resetToRaw)
 private:
     QVector<QGraphicsObject *> items;
     QPoint storePoint = {0, 0};
     int space = 5;
 private:
     const int radius = 15;
+    QString text;
 public:
-    explicit VertexListObject(const QVariantList &rawValues = {}, QGraphicsItem *parent = nullptr) :
-            QGraphicsObject(parent) {
+    explicit VertexListObject(const QString &text, const QVariantList &rawValues = {},
+                              QGraphicsItem *parent = nullptr) : text(text), QGraphicsObject(parent) {
         setFlag(ItemIsMovable);
-        resetToRaw({"空"});
     }
 
     void append(const QVariant &value) {
@@ -44,6 +39,7 @@ public:
     }
 
     void resetToRaw(const QVariantList &rawValues) {
+        prepareGeometryChange();
         for (const auto &item : items) { delete item; }
         items = {};
         storePoint = {0, 0};
@@ -54,10 +50,24 @@ public:
 
     QRectF boundingRect() const override {
         double adjustedRadius = radius + 7.0;
-        return {-adjustedRadius, -adjustedRadius, double(storePoint.x()), 2 * adjustedRadius};
+        double deltaHeight = 40.0;
+        double width = 110.0;
+        if (storePoint.x() + 20.0 > width) { width = storePoint.x() + 20.0; }
+        return {-adjustedRadius, -adjustedRadius - deltaHeight,
+                width, 2 * adjustedRadius + deltaHeight};
     }
 
-    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override {}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) override {
+        painter->setPen(QPen(Qt::lightGray, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        painter->setBrush(QBrush(QColor(180, 233, 255, 120)));
+        painter->drawRect(boundingRect());
+
+        QFont font;
+        font.setPointSize(15);
+        painter->setPen(Qt::black);
+        painter->setFont(font);
+        painter->drawText(-radius, -35.0, text);
+    }
 };
 
 
