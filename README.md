@@ -12,7 +12,7 @@
 
 3. Graphically show the results of deep first search and breadth first search on the graph and its stack/queue condition.
 
-![Presentation](Assets/Presentation.gif)
+<img src="Assets/Presentation.gif" width = 50% />
 
 ## Development Environment
 
