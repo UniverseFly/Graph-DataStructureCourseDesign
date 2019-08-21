@@ -13,7 +13,7 @@
 struct VertexItem;
 
 struct ArcItem : QGraphicsItem {
-    friend struct GraphObject;
+    friend struct GraphItem;
     friend struct VertexItem;
 private:
     QPoint start;

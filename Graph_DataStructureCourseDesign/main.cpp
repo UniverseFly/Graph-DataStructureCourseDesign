@@ -11,12 +11,12 @@
 #include <QListView>
 #include "ApplicationWindow.h"
 #include "GraphModel.h"
-#include "VertexListObject.h"
+#include "VertexListItem.h"
 
-#include "GraphObject.h"
-#include "AdjointNodeObject.h"
-#include "AdjointListObject.h"
-#include "AdjointListGraphObject.h"
+#include "GraphItem.h"
+#include "AdjointNodeItem.h"
+#include "AdjointSingleListItem.h"
+#include "AdjointListItem.h"
 
 #include <QDebug>
 #include <QLabel>
@@ -62,13 +62,14 @@ void testCase() {
 
 int main(int argc, char **argv) {
     QApplication app(argc, argv);
-    QApplication::setApplicationName("数据结构-图");
+    QApplication::setApplicationName("图的遍历");
+    QApplication::setWindowIcon(QIcon(":/Assets/PrettyVertex.png"));
 
     ApplicationWindow window;
     window.show();
 
-    // VertexListObject itemListView({1, 2, 9, 10, 25});
-    // AdjointListGraphObject graphObject;
+    // VertexListItem itemListView({1, 2, 9, 10, 25});
+    // AdjointListItem graphObject;
     // graphObject.resetFromRaw({{1, {2, 3, 4}}});
     // graphObject.resetFromRaw({{1, {2, 3, 4}}, {2, {4, 4, 5}}});
     // graphObject.resetFromRaw({{4, {2, 3, 4}}, {2, {4, 4, 5}}, {2, {4, 4, 5}}, {2, {4, 4, 5}}, {2, {4, 4, 5}}, {2, {4, 4, 5}}, {2, {4, 4, 5}}, {2, {4, 4, 5}}, {2, {4, 4, 5}}, {2, {4, 4, 5}}});

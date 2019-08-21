@@ -15,7 +15,7 @@
 #include "VertexItem.h"
 
 
-struct VertexListObject : QGraphicsObject {
+struct VertexListItem : QGraphicsObject {
 Q_OBJECT
 Q_PROPERTY(QVariantList raw WRITE resetToRaw)
 private:
@@ -26,8 +26,8 @@ private:
     const int radius = 15;
     QString text;
 public:
-    explicit VertexListObject(const QString &text, const QVariantList &rawValues = {},
-                              QGraphicsItem *parent = nullptr) : text(text), QGraphicsObject(parent) {
+    explicit VertexListItem(const QString &text, const QVariantList &rawValues = {},
+                            QGraphicsItem *parent = nullptr) : text(text), QGraphicsObject(parent) {
         setFlag(ItemIsMovable);
     }
 

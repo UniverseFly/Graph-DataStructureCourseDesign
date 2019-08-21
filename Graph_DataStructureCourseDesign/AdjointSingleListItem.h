@@ -2,8 +2,8 @@
 // Created by 魏宇翔 on 2019-08-20.
 //
 
-#ifndef GRAPH_DATASTRUCTURECOURSEDEIGN_ADJOINTLISTOBJECT_H
-#define GRAPH_DATASTRUCTURECOURSEDEIGN_ADJOINTLISTOBJECT_H
+#ifndef GRAPH_DATASTRUCTURECOURSEDEIGN_ADJOINTSINGLELISTITEM_H
+#define GRAPH_DATASTRUCTURECOURSEDEIGN_ADJOINTSINGLELISTITEM_H
 
 
 #include <QGraphicsObject>
@@ -11,18 +11,18 @@
 #include <QSet>
 #include "VertexItem.h"
 #include "ArcItem.h"
-#include "AdjointNodeObject.h"
+#include "AdjointNodeItem.h"
 
-struct AdjointListObject : QGraphicsObject {
+struct AdjointSingleListItem : QGraphicsObject {
 Q_OBJECT
 private:
     QPoint pointToStore = {100, 0};
     const int space = 40;
     VertexItem *vertex = nullptr;
-    QVector<AdjointNodeObject *> adjNodes;
+    QVector<AdjointNodeItem *> adjNodes;
     QVector<ArcItem *> arrows;
 public:
-    explicit AdjointListObject(QGraphicsItem *parent = nullptr) : QGraphicsObject(parent) {}
+    explicit AdjointSingleListItem(QGraphicsItem *parent = nullptr) : QGraphicsObject(parent) {}
 
     void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override {}
 
@@ -49,7 +49,7 @@ public:
 
         pointToStore = {110, 0};
         for (auto iter = nodeTexts.begin(); iter != nodeTexts.end();) {
-            auto node = new AdjointNodeObject(QVariant(*iter).toString(), this);
+            auto node = new AdjointNodeItem(QVariant(*iter).toString(), this);
             node->setPos(pointToStore);
             pointToStore += {int(node->scale() * node->boundingRect().width() + space), 0};
             adjNodes.push_back(node);
@@ -65,4 +65,4 @@ public:
 };
 
 
-#endif //GRAPH_DATASTRUCTURECOURSEDEIGN_ADJOINTLISTOBJECT_H
+#endif //GRAPH_DATASTRUCTURECOURSEDEIGN_ADJOINTSINGLELISTITEM_H

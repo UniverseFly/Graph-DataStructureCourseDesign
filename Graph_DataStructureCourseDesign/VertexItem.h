@@ -12,16 +12,16 @@
 #include <QVector>
 #include <QPen>
 
-struct GraphObject;
+struct GraphItem;
 struct ArcItem;
 
 struct VertexItem : QGraphicsObject {
 Q_OBJECT
     friend struct ArcItem;
-    friend struct GraphObject;
+    friend struct GraphItem;
 private:
     QString text;
-    GraphObject *graph = nullptr;
+    GraphItem *graph = nullptr;
     QVector<ArcItem *> arcs;
     QRect bound = {-20, -20, 40, 40};
     int radius;

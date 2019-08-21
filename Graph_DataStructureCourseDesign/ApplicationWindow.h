@@ -10,15 +10,16 @@
 #include <QWidget>
 #include <QtCore>
 #include <QMenuBar>
+#include <QApplication>
 #include <QAction>
 #include <QGraphicsView>
 #include <QCombobox>
 #include <QVariantList>
 #include <QLayout>
 #include "GraphModel.h"
-#include "VertexListObject.h"
-#include "GraphObject.h"
-#include "AdjointListGraphObject.h"
+#include "VertexListItem.h"
+#include "GraphItem.h"
+#include "AdjointListItem.h"
 
 #define TEST_CASE \
     addVertex();\
@@ -32,8 +33,6 @@
     graphObject.addArc(1, 2);\
     model.addArc(0, 3);\
     graphObject.addArc(0, 3);\
-    model.addArc(1, 2);\
-    graphObject.addArc(1, 2);\
     model.addArc(1, 4);\
     graphObject.addArc(1, 4);\
     adjointListGraph.resetFromRaw(model.getAdjointList());
@@ -44,13 +43,15 @@ Q_OBJECT
 private:
     GraphModel model;
     // 栈、队列的元素信息
-    VertexListObject containerInfo;
+    VertexListItem containerInfo;
     // 用来显示搜索结果
-    VertexListObject searchResult;
+    VertexListItem searchResult;
     // 用于显示的视图
-    GraphObject graphObject;
+    GraphItem graphObject;
     // 邻接表的显示
-    AdjointListGraphObject adjointListGraph;
+    AdjointListItem adjointListGraph;
+    // 判断是否在动画中，从而切断一些用户操作
+    bool isAnimating = false;
 public:
     explicit ApplicationWindow(QWidget *parent = nullptr) :
             containerInfo("栈、队列情况"), searchResult("遍历结果"), QGraphicsView(parent) {
@@ -58,7 +59,7 @@ public:
         searchResult.setPos(-500, -150);
         adjointListGraph.setPos(-480, 0);
 
-        auto scene = new QGraphicsScene(QRect(-600, -450, 1200, 900), this);
+        auto scene = new QGraphicsScene(QRect(-1500, -600, 3000, 1200), this);
         scene->addItem(&containerInfo);
         scene->addItem(&searchResult);
         scene->addItem(&graphObject);
@@ -83,15 +84,24 @@ public:
 private:
     void initMenu() {
         auto menuBar = new QMenuBar(this);
+
+        // 一级菜单
         auto structure = menuBar->addMenu("结构");
         auto algorithms = menuBar->addMenu("算法");
+        auto display = menuBar->addMenu("显示");
+        auto help = menuBar->addMenu("帮助");
 
+        // 二级菜单与actions
         auto addVertex = new QAction("添加顶点", this);
         auto addArc = new QAction("添加弧", this);
         auto clearGraph = new QAction("清空顶点");
         auto dfs = new QMenu("深度优先遍历", this);
         auto bfs = new QAction("广度优先遍历", this);
+        auto showInstruction = new QAction("使用说明", this);
+        auto zoomIn = new QAction("放大", this);
+        auto zoomOut = new QAction("缩小", this);
 
+        // 三级actions
         auto dfs_recursive = new QAction("递归", this);
         auto dfs_nonRecursive = new QAction("非递归", this);
 
@@ -100,7 +110,20 @@ private:
         algorithms->addMenu(dfs);
         algorithms->addAction(bfs);
 
+        display->addActions({zoomIn, zoomOut});
+
+        help->addAction(showInstruction);
+
         dfs->addActions({dfs_nonRecursive, dfs_recursive});
+
+        addVertex->setShortcut(Qt::CTRL + Qt::Key_V);
+        addArc->setShortcut(Qt::CTRL + Qt::Key_A);
+        clearGraph->setShortcut(Qt::CTRL + Qt::Key_R);
+        dfs_nonRecursive->setShortcut(Qt::CTRL + Qt::Key_D);
+        dfs_recursive->setShortcut(Qt::SHIFT + Qt::CTRL + Qt::Key_D);
+        bfs->setShortcut(Qt::CTRL + Qt::Key_B);
+        zoomIn->setShortcut(QKeySequence::ZoomIn);
+        zoomOut->setShortcut(QKeySequence::ZoomOut);
 
         QObject::connect(addVertex, &QAction::triggered, this, &ApplicationWindow::addVertex);
         QObject::connect(addArc, &QAction::triggered, this, &ApplicationWindow::addArc);
@@ -108,9 +131,30 @@ private:
         QObject::connect(dfs_nonRecursive, &QAction::triggered, this, &ApplicationWindow::dfs_nonRecursive);
         QObject::connect(dfs_recursive, &QAction::triggered, this, &ApplicationWindow::dfs_recursive);
         QObject::connect(bfs, &QAction::triggered, this, &ApplicationWindow::bfs);
+        QObject::connect(showInstruction, &QAction::triggered, this, &ApplicationWindow::showInstruction);
+        QObject::connect(zoomIn, &QAction::triggered, this, &ApplicationWindow::zoomIn);
+        QObject::connect(zoomOut, &QAction::triggered, this, &ApplicationWindow::zoomOut);
+    }
+
+    void zoomIn() {
+        scaleView(qreal(1.2));
+    }
+
+    void zoomOut() {
+        scaleView(1 / qreal(1.2));
+    };
+
+    void showInstruction() {
+        QMessageBox::information(this, "帮助", "<h4>界面上的顶点、框框均可拖动</h4>\n"
+                                             "<h4>可以通过Ctrl/Command + 滚轮实现缩放</h4>\n"
+                                             "<h4>已经预置了部分顶点和弧，请通过拖动分离</h4>");
     }
 
     void clearGraph() {
+        if (isAnimating) {
+            QMessageBox::warning(this, "操作失败", "请等待动画结束后操作");
+            return;
+        }
         model.reset();
         graphObject.reset();
         adjointListGraph.resetFromRaw({});
@@ -215,7 +259,7 @@ private:
         group->start(QPropertyAnimation::DeleteWhenStopped);
 
         QVector<QState *> states;
-        auto machine = new QStateMachine;
+        auto machine = new QStateMachine(this);
         for (const auto &containerState : result.second) {
             auto state = new QState(machine);
             state->assignProperty(&containerInfo, "raw", containerState);
@@ -239,7 +283,12 @@ private:
         machine->start();
 
         sequenceAnimation->start(QPropertyAnimation::DeleteWhenStopped);
+
+        isAnimating = true;
+        QObject::connect(group, &QPropertyAnimation::finished, this, &ApplicationWindow::userInteractionEnabled);
     }
+
+    void userInteractionEnabled() { isAnimating = false; }
 
     void addVertex() {
         model.addVertex();
@@ -288,19 +337,23 @@ private:
         adjointListGraph.resetFromRaw(model.getAdjointList());
     }
 
-// protected:
-//     void wheelEvent(QWheelEvent *event) override {
-//         scaleView(pow((double) 2, -event->delta() / 240.0));
-//     }
-//
-// private:
-//     void scaleView(qreal scaleFactor) {
-//         qreal factor = transform().scale(scaleFactor, scaleFactor).mapRect(QRectF(0, 0, 1, 1)).width();
-//         if (factor < 0.07 || factor > 100)
-//             return;
-//
-//         scale(scaleFactor, scaleFactor);
-//     }
+protected:
+    void wheelEvent(QWheelEvent *event) override {
+        if (QApplication::keyboardModifiers() == Qt::CTRL) {
+            scaleView(pow((double) 2, -event->delta() / 240.0));
+        } else {
+            QGraphicsView::wheelEvent(event);
+        }
+    }
+
+private:
+    void scaleView(qreal scaleFactor) {
+        qreal factor = transform().scale(scaleFactor, scaleFactor).mapRect(QRectF(0, 0, 1, 1)).width();
+        if (factor < 0.07 || factor > 100)
+            return;
+
+        scale(scaleFactor, scaleFactor);
+    }
 };
 
 

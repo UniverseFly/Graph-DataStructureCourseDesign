@@ -2,23 +2,23 @@
 // Created by 魏宇翔 on 2019-08-20.
 //
 
-#ifndef GRAPH_DATASTRUCTURECOURSEDEIGN_ADJOINTLISTGRAPHOBJECT_H
-#define GRAPH_DATASTRUCTURECOURSEDEIGN_ADJOINTLISTGRAPHOBJECT_H
+#ifndef GRAPH_DATASTRUCTURECOURSEDEIGN_ADJOINTLISTITEM_H
+#define GRAPH_DATASTRUCTURECOURSEDEIGN_ADJOINTLISTITEM_H
 
 
 #include <QGraphicsObject>
 #include <QPainter>
 #include <QPair>
 #include <QVector>
-#include "AdjointListObject.h"
+#include "AdjointSingleListItem.h"
 
-struct AdjointListGraphObject : QGraphicsObject {
+struct AdjointListItem : QGraphicsObject {
 private:
-    QVector<AdjointListObject *> rows;
+    QVector<AdjointSingleListItem *> rows;
     const int space = 20;
     QPoint pointToStore = {0, 0};
 public:
-    explicit AdjointListGraphObject(QGraphicsItem *parent = nullptr) : QGraphicsObject(parent) {
+    explicit AdjointListItem(QGraphicsItem *parent = nullptr) : QGraphicsObject(parent) {
         setFlag(ItemIsMovable);
     }
 
@@ -29,7 +29,7 @@ public:
         prepareGeometryChange();
         pointToStore = {0, 0};
         for (const auto &pair : rawValue) {
-            auto row = new AdjointListObject(this);
+            auto row = new AdjointSingleListItem(this);
             row->resetFromRaw(pair.first, pair.second);
             row->setPos(pointToStore);
             rows.push_back(row);
@@ -63,4 +63,4 @@ public:
 };
 
 
-#endif //GRAPH_DATASTRUCTURECOURSEDEIGN_ADJOINTLISTGRAPHOBJECT_H
+#endif //GRAPH_DATASTRUCTURECOURSEDEIGN_ADJOINTLISTITEM_H

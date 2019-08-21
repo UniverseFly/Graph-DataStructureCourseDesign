@@ -2,19 +2,19 @@
 // Created by 魏宇翔 on 2019-08-20.
 //
 
-#ifndef GRAPH_DATASTRUCTURECOURSEDEIGN_ADJOINTNODEOBJECT_H
-#define GRAPH_DATASTRUCTURECOURSEDEIGN_ADJOINTNODEOBJECT_H
+#ifndef GRAPH_DATASTRUCTURECOURSEDEIGN_ADJOINTNODEITEM_H
+#define GRAPH_DATASTRUCTURECOURSEDEIGN_ADJOINTNODEITEM_H
 
 
 #include <QGraphicsObject>
 #include <QPainter>
 
-struct AdjointNodeObject : QGraphicsObject {
+struct AdjointNodeItem : QGraphicsObject {
 Q_OBJECT
 private:
     QString text;
 public:
-    explicit AdjointNodeObject(const QVariant &text, QGraphicsItem *parent = nullptr) :
+    explicit AdjointNodeItem(const QVariant &text, QGraphicsItem *parent = nullptr) :
             text(text.toString()), QGraphicsObject(parent) {}
 
     QRectF boundingRect() const override {
@@ -31,4 +31,4 @@ public:
 };
 
 
-#endif //GRAPH_DATASTRUCTURECOURSEDEIGN_ADJOINTNODEOBJECT_H
+#endif //GRAPH_DATASTRUCTURECOURSEDEIGN_ADJOINTNODEITEM_H

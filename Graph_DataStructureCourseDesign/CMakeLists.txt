@@ -11,7 +11,11 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 
-add_executable(Graph_DataStructureCourseDeign main.cpp GraphModel.h VertexItem.h ArcItem.h VertexListObject.h GraphObject.h ApplicationWindow.h AdjointListObject.h AdjointNodeObject.h AdjointListGraphObject.h VertexItem.cpp ArcItem.cpp)
+set(SOURCES main.cpp VertexItem.cpp ArcItem.cpp Resources.qrc)
+set(HEADERS GraphModel.h VertexItem.h ArcItem.h VertexListItem.h GraphItem.h ApplicationWindow.h
+        AdjointSingleListItem.h AdjointNodeItem.h AdjointListItem.h)
 
-target_link_libraries(Graph_DataStructureCourseDeign Qt5::Widgets)
-target_link_libraries(Graph_DataStructureCourseDeign Qt5::Core)
+add_executable(FreeGraph ${SOURCES} ${HEADERS})
+
+target_link_libraries(FreeGraph Qt5::Widgets)
+target_link_libraries(FreeGraph Qt5::Core)
