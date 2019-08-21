@@ -1,4 +1,6 @@
-# <img src="Assets/AdjointList.png" width=150> Graph Visualization
+<img src="Assets/AdjointList.png" width=150>
+
+# Graph Visualization
 
 > 同济大学数据结构2019暑期课程设计算法实现题
 
@@ -10,7 +12,7 @@
 
 3. Graphically show the results of deep first search and breadth first search on the graph and its stack/queue condition.
 
-<video src="Assets/Presentation.mov" />
+![Presentation](Assets/Presentation.gif)
 
 ## Development Environment
 
