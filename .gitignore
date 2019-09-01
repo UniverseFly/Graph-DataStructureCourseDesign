@@ -1,4 +1,6 @@
 .DS_Store
-cmake-build-debug/
 .idea/
 
+# 不知道为什么这么写就可以
+**/cmake-build-debug/*
+!**/cmake-build-debug/FreeGraph
