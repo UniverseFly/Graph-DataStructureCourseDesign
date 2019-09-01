@@ -10,13 +10,14 @@
   
 2. Synchronously render its adjoint list.
 
-3. Graphically show the results of deep first search and breadth first search on the graph and its stack/queue condition.
+3. Graphically show the results of deep first search and breadth first search on the graph
+and its stack/queue condition.
 
 <img src="Assets/Presentation.gif" width = 50% />
 
 ## Executable
 
-Click 📧!
+Click [here](Graph_DataStructureCourseDesign/cmake-build-debug)!
 
 ## Development Environment
 
