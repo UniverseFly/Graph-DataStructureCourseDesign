@@ -14,6 +14,10 @@
 
 <img src="Assets/Presentation.gif" width = 50% />
 
+## Executable
+
+Click 📧!
+
 ## Development Environment
 
 - *Operating system:* macOS Mojave 10.14.5
