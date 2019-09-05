@@ -4,6 +4,8 @@
 
 > 同济大学数据结构2019暑期课程设计算法实现题
 
+- [Report](https://github.com/UniverseFly/SwiftUI-SubwayTransferSystem/blob/master/Report.pdf)
+
 ## Primary Implementations
 
 1. Dynamically create and show a graph with **draggable items**.
